@@ -21,11 +21,22 @@ import { Badge } from "@/components/ui/badge";
 import { Order } from "@/lib/types";
 import { getOrders } from "@/lib/mockData";
 import { Eye, Filter, Plus, Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Simulate API call
@@ -35,13 +46,18 @@ export default function Orders() {
         setOrders(data);
       } catch (error) {
         console.error("Error fetching orders:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load orders",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [toast]);
 
   const filteredOrders = orders.filter(
     (order) =>
@@ -66,6 +82,19 @@ export default function Orders() {
     }
   };
 
+  const handleNewOrder = () => {
+    toast({
+      title: "New Order",
+      description: "Order creation feature coming soon!",
+      variant: "default",
+    });
+  };
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsViewDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -75,7 +104,7 @@ export default function Orders() {
             View and manage customer orders
           </p>
         </div>
-        <Button>
+        <Button onClick={handleNewOrder}>
           <Plus className="mr-2 h-4 w-4" /> New Order
         </Button>
       </div>
@@ -101,7 +130,17 @@ export default function Orders() {
                 />
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                toast({
+                  title: "Filter",
+                  description: "Filter functionality coming soon!",
+                  variant: "default",
+                });
+              }}
+            >
               <Filter className="mr-2 h-4 w-4" /> Filter
             </Button>
           </div>
@@ -145,6 +184,7 @@ export default function Orders() {
                           variant="ghost" 
                           size="sm" 
                           className="h-8 w-8 p-0"
+                          onClick={() => handleViewOrder(order)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -157,6 +197,89 @@ export default function Orders() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Order Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Order Details</DialogTitle>
+            <DialogDescription>
+              {selectedOrder?.orderNumber} - {selectedOrder?.customer.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Order Information */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Date</p>
+                <p>{selectedOrder?.date && new Date(selectedOrder.date).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Status</p>
+                <p className="capitalize">{selectedOrder?.status}</p>
+              </div>
+            </div>
+
+            {/* Customer Information */}
+            <div>
+              <h4 className="font-medium mb-2">Customer Details</h4>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Name:</p>
+                  <p>{selectedOrder?.customer.name}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Email:</p>
+                  <p>{selectedOrder?.customer.email}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Phone:</p>
+                  <p>{selectedOrder?.customer.phone}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Address:</p>
+                  <p>
+                    {selectedOrder?.customer.address}, {selectedOrder?.customer.city}, {selectedOrder?.customer.state} {selectedOrder?.customer.postalCode}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Items */}
+            <div>
+              <h4 className="font-medium mb-2">Order Items</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Unit Price</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedOrder?.items.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.product.name}</TableCell>
+                      <TableCell>${item.unitPrice.toFixed(2)}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell className="text-right">${(item.unitPrice * item.quantity).toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Order Total */}
+            <div className="flex justify-end text-right">
+              <div>
+                <p className="text-muted-foreground text-sm">Total Amount:</p>
+                <p className="text-lg font-bold">${selectedOrder?.total.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
