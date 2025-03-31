@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Card,
@@ -52,7 +51,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Form schema for product validation
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name is required" }),
   sku: z.string().min(2, { message: "SKU is required" }),
@@ -73,7 +71,6 @@ export default function Products() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Define the form with react-hook-form
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -89,7 +86,6 @@ export default function Products() {
   });
 
   useEffect(() => {
-    // Simulate API call
     const fetchData = async () => {
       try {
         const data = getProducts();
@@ -117,10 +113,16 @@ export default function Products() {
   );
 
   const onSubmit = (data: ProductFormValues) => {
-    // Simulate adding a new product
     const newProduct: Product = {
       id: `${products.length + 1}`,
-      ...data,
+      name: data.name,
+      sku: data.sku,
+      category: data.category,
+      price: data.price,
+      cost: data.cost,
+      stock: data.stock,
+      reorderLevel: data.reorderLevel,
+      description: data.description || "",
     };
     
     setProducts([...products, newProduct]);
@@ -128,7 +130,7 @@ export default function Products() {
     toast({
       title: "Product Added",
       description: `${data.name} has been added successfully`,
-      variant: "success",
+      variant: "default",
     });
     
     setIsDialogOpen(false);
@@ -396,7 +398,6 @@ export default function Products() {
   );
 }
 
-// Helper function to determine stock status
 function getStockStatus(product: Product) {
   if (product.stock <= product.reorderLevel) {
     return { label: "Low Stock", variant: "destructive" as const };

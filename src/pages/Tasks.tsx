@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -44,7 +43,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Form schema for task validation
 const taskSchema = z.object({
   title: z.string().min(2, { message: "Task title is required" }),
   description: z.string().min(2, { message: "Description is required" }),
@@ -63,7 +61,6 @@ export default function Tasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Initialize the form
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -77,7 +74,6 @@ export default function Tasks() {
   });
 
   useEffect(() => {
-    // Simulate API call
     const fetchData = async () => {
       try {
         const tasksData = getTasks();
@@ -100,12 +96,10 @@ export default function Tasks() {
   }, [toast]);
 
   const onSubmit = (data: TaskFormValues) => {
-    // Find the assigned employee if provided
     const assignee = data.assigneeId 
       ? employees.find(emp => emp.id === data.assigneeId)
       : undefined;
     
-    // Create new task
     const newTask: Task = {
       id: `${tasks.length + 1}`,
       title: data.title,
@@ -121,7 +115,7 @@ export default function Tasks() {
     toast({
       title: "Task Added",
       description: `${data.title} has been created successfully`,
-      variant: "success",
+      variant: "default",
     });
     
     setIsDialogOpen(false);

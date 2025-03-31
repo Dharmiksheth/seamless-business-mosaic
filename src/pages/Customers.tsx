@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -43,7 +42,6 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-// Form schema for customer validation
 const customerSchema = z.object({
   name: z.string().min(2, { message: "Name is required" }),
   email: z.string().email({ message: "Valid email is required" }),
@@ -65,7 +63,6 @@ export default function Customers() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Initialize the form
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
@@ -82,7 +79,6 @@ export default function Customers() {
   });
 
   useEffect(() => {
-    // Simulate API call
     const fetchData = async () => {
       try {
         const data = getCustomers();
@@ -111,10 +107,17 @@ export default function Customers() {
   );
 
   const onSubmit = (data: CustomerFormValues) => {
-    // Create new customer
     const newCustomer: Customer = {
       id: `${customers.length + 1}`,
-      ...data,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      company: data.company || "",
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      postalCode: data.postalCode,
+      country: data.country,
     };
     
     setCustomers([...customers, newCustomer]);
@@ -122,7 +125,7 @@ export default function Customers() {
     toast({
       title: "Customer Added",
       description: `${data.name} has been added successfully`,
-      variant: "success",
+      variant: "default",
     });
     
     setIsDialogOpen(false);

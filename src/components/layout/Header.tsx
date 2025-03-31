@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Bell, Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -157,7 +156,7 @@ export default function Header() {
                       <div className="flex justify-between items-start">
                         <h4 className="text-sm font-medium">{notification.title}</h4>
                         {!notification.read && (
-                          <Badge variant="primary" className="h-2 w-2 rounded-full p-0" />
+                          <Badge variant="default" className="h-2 w-2 rounded-full p-0" />
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
