@@ -37,6 +37,10 @@ const toastVariants = cva(
           "border-yellow-500 bg-yellow-500 text-white",
         primary:
           "border-primary bg-primary text-primary-foreground",
+        secondary:
+          "border-secondary bg-secondary text-secondary-foreground",
+        outline:
+          "border bg-background text-foreground",
       },
     },
     defaultVariants: {
